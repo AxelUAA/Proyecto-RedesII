@@ -1,0 +1,48 @@
+services:
+  mailserver:
+    image: tvial/docker-mailserver:latest
+    container_name: mail-server
+    restart: always
+    hostname: mailserver
+    domainname: redes.local
+    ports:
+      - "25:25"
+      - "143:143" # IMAP
+      - "587:587" # SMTPS/Submission
+      - "993:993" # IMAPS (opcional)
+    environment:
+      OVERRIDE_HOSTNAME: mailserver.redes.local
+      DOMAINNAME: redes.local
+      ENABLE_VIRTUAL_ACCOUNTS: 1
+      ENABLE_CLAMAV: 1
+      ENABLE_SPAMASSASSIN: 1
+      SPAMASSASSIN_SPAM_TO_INBOX: 1
+      ENABLE_SASL_AUTH: 1
+      ONE_DIR: 1
+    volumes:
+      - ./mail-config/postfix-accounts.cf:/tmp/docker-mailserver/postfix-accounts.cf
+      - ./mail-data:/var/mail
+      - ./mail-state:/var/mail-state
+      - ./mail-log:/var/log/mail
+    networks:
+      - mailnet
+
+  rainloop:
+    image: hardware/rainloop:latest
+    container_name: mail-rainloop
+    restart: always
+    environment:
+      TZ: "UTC"
+      PHP_MAX_EXECUTION_TIME: 120
+    ports:
+      - "8082:8888"  # RainLoop listens on 8888 internally
+    depends_on:
+      - mailserver
+    networks:
+      - mailnet
+    volumes:
+      - ./rainloop-data:/rainloop/data
+
+networks:
+  mailnet:
+    driver: bridge

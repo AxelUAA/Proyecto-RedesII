@@ -2,3 +2,18 @@
 *.log
 __pycache__/
 node_modules/
+
+# docker-mailserver runtime data (owned by root/inside container)
+mail-data/
+mail-state/
+mail-log/
+
+# RainLoop persistent data
+rainloop-data/
+
+# Python/venv and editor junk
+.venv/
+.vscode/
+.DS_Store
+*.swp
+*.swo
