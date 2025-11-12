@@ -17,6 +17,22 @@ services:
     networks:
       - appnet
 
+  portainer:
+    image: portainer/portainer-ce:latest
+    restart: always
+    ports:
+      - "9443:9443"        # UI HTTPS
+      # - "9000:9000"      # (opcional) UI HTTP legacy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - portainer_data:/data
+    networks:
+      - appnet
+
+
 networks:
   appnet:
     driver: bridge
+
+volumes:
+  portainer_data:
